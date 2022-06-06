@@ -7,6 +7,6 @@ import java.io.IOException;
 import java.util.List;
 
 public interface RequestSender {
-    List<UserDTO> getPublishers(String username) throws IOException;
-    List<String> sendContent(List<MultipartFile> files);
+    List<UserDTO> getPublishers(String token) throws IOException;
+    List<String> sendContent(MultipartFile[] files) throws IOException;
 }

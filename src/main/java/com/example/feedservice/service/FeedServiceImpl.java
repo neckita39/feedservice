@@ -6,8 +6,8 @@ import com.example.feedservice.db.FeedRepository;
 import com.example.feedservice.dto.FeedDTO;
 import com.example.feedservice.dto.UserDTO;
 import com.example.feedservice.request.RequestSender;
-import com.example.feedservice.request.RequestSenderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class FeedServiceImpl implements FeedService{
 
     private final FeedRepository feedRepository;
@@ -47,9 +48,9 @@ public class FeedServiceImpl implements FeedService{
     }
 
     @Override
-    public List<FeedDTO> getFeeds(String username) throws IOException {
-        var publishers =  requestSender.getPublishers(username);
-        var feed = feedRepository.findByUsername(publishers.stream()
+    public List<FeedDTO> getFeeds(String token) throws IOException {
+        var publishers =  requestSender.getPublishers(token);
+        var feed = feedRepository.findByUsernameIn(publishers.stream()
                 .map(UserDTO::getUsername).collect(Collectors.toList()));
         List<FeedDTO> feeds = new LinkedList<>();
         for (var post: feed){
@@ -70,8 +71,13 @@ public class FeedServiceImpl implements FeedService{
     }
 
     @Override
-    public void saveContent(List<MultipartFile> files) {
-        
+    public List<String> saveContent(MultipartFile[] files) throws IOException {
+        return requestSender.sendContent(files);
+    }
+
+    @Override
+    public String getFeedOwner(FeedDTO feedDTO) {
+        return feedRepository.findFeedEntityById(feedDTO.getId()).getUsername();
     }
 
 
