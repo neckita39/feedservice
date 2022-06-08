@@ -23,4 +23,6 @@ public interface FeedService {
 
     String getFeedOwner(FeedDTO feedDTO);
 
+    List<FeedDTO> getUserFeeds(String username);
+
 }

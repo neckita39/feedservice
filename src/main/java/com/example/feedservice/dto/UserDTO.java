@@ -10,7 +10,7 @@ public class UserDTO {
 
     private String username;
 
-    private String photo_url;
+    private String photo;
 
     private String firstname;
 

@@ -21,15 +21,22 @@ import java.util.Objects;
 public class RequestSenderImpl implements RequestSender{
     @Value("${USER_SERVICE_URL}")
     private String userServiceUrl;
+
+    @Value("${DATA_SERVICE_URL}")
+    private String dataServiceUrl;
     private final OkHttpClient httpClient = new OkHttpClient();
 
-    public List<UserDTO> getPublishers(String token) throws IOException {
+    public List<UserDTO> getPublishers(String username) throws IOException {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(username);
         ObjectMapper mapper = new ObjectMapper();
+
+        var json = mapper.writeValueAsString(userDTO);
+        RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
         Request request = new Request.Builder()
                 .url(userServiceUrl + "/get/subscribes")
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", "Bearer " + token)
-                .get()
+                .post(body)
                 .build();
         Call call = httpClient.newCall(request);
         Response response = call.execute();
@@ -48,7 +55,7 @@ public class RequestSenderImpl implements RequestSender{
         }
 
         Request request = new Request.Builder()
-                .url(userServiceUrl + "/content/save")
+                .url(dataServiceUrl + "/content/save")
                 .addHeader("Content-Type", "multipart/form-data")
                 .post(requestBuilder.build())
                 .build();

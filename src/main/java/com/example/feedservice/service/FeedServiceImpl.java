@@ -48,8 +48,8 @@ public class FeedServiceImpl implements FeedService{
     }
 
     @Override
-    public List<FeedDTO> getFeeds(String token) throws IOException {
-        var publishers =  requestSender.getPublishers(token);
+    public List<FeedDTO> getFeeds(String username) throws IOException {
+        var publishers =  requestSender.getPublishers(username);
         var feed = feedRepository.findByUsernameIn(publishers.stream()
                 .map(UserDTO::getUsername).collect(Collectors.toList()));
         List<FeedDTO> feeds = new LinkedList<>();
@@ -79,6 +79,17 @@ public class FeedServiceImpl implements FeedService{
     public String getFeedOwner(FeedDTO feedDTO) {
         return feedRepository.findFeedEntityById(feedDTO.getId()).getUsername();
     }
-
+    @Override
+    public List<FeedDTO> getUserFeeds(String username){
+        return  feedRepository.findAllByUsername(username).stream().map((var c) -> {
+            FeedDTO feedDTO = new FeedDTO();
+            feedDTO.setId(c.getId());
+            feedDTO.setDate(c.getDate());
+            feedDTO.setText(c.getText());
+            var contents = c.getContents();
+            feedDTO.setContent(c.getContents().stream().map(ContentEntity::getContent_url).collect(Collectors.toList()));
+            return feedDTO;
+        }).collect(Collectors.toList());
+    }
 
 }

@@ -9,4 +9,5 @@ import java.util.List;
 public interface FeedRepository extends JpaRepository<FeedEntity, Long> {
     List<FeedEntity> findByUsernameIn(List<String> usernames);
     FeedEntity findFeedEntityById(Long id);
+    List<FeedEntity> findAllByUsername(String username);
 }
